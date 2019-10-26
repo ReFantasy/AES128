@@ -1,5 +1,5 @@
 ﻿/******************************************************************************************************************************************************
- *        
+ *
  *  https://csrc.nist.gov/csrc/media/publications/fips/197/final/documents/fips-197.pdf
  *
  *  Reference:
@@ -7,7 +7,7 @@
  *            https://www.jianshu.com/p/3840b344b27c?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
  *            https://blog.csdn.net/github_39295111/article/details/75646459
  *            https://blog.csdn.net/bupt073114/article/details/27382533
- *            
+ *
  *
  ******************************************************************************************************************************************************/
 #ifndef __AES_H__
@@ -32,7 +32,7 @@ const uint8_t Nr = 10;
 
 // 轮常数，密钥扩展中用到。（AES-128只需要10轮）  
 const word Rcon[10] = { 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
-				 0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000 };
+					   0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000 };
 
 /*
  * Addition in GF(2^8)
@@ -67,7 +67,7 @@ public:
 	 */
 	void InvEncrypt(byte(&in)[4 * Nb], byte(&out)[4 * Nb], byte(&key)[4 * Nk]);
 
-	
+
 
 private:
 	/** \brief 使用S-box进行字节映射
@@ -83,9 +83,9 @@ private:
 	word RotWord(const word &wd)const;
 
 	/** \brief 密钥扩展
-     *  \param[in] key 初始密钥
+	 *  \param[in] key 初始密钥
 	 *  \param[out] w 扩展后的(Nr+1)组密钥，包含初始密钥
-     *  \return void
+	 *  \return void
 	 */
 	void KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])const;
 
@@ -157,7 +157,7 @@ private:
 	 */
 	void GetKey(word(&w)[Nb*(Nr + 1)], int b, byte(&key)[4][4]);
 
-	
+
 };
 
 #endif//__AES_H__
