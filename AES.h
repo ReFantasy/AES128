@@ -1,8 +1,15 @@
-﻿/******************************************************************************************
+﻿/******************************************************************************************************************************************************
  *        
  *  https://csrc.nist.gov/csrc/media/publications/fips/197/final/documents/fips-197.pdf
  *
- ******************************************************************************************/
+ *  Reference:
+ *            https://blog.csdn.net/qq_38289815/article/details/80900813
+ *            https://www.jianshu.com/p/3840b344b27c?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+ *            https://blog.csdn.net/github_39295111/article/details/75646459
+ *            https://blog.csdn.net/bupt073114/article/details/27382533
+ *            
+ *
+ ******************************************************************************************************************************************************/
 #ifndef __AES_H__
 #define __AES_H__
 #include <bitset>
