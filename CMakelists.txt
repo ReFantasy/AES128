@@ -1,10 +1,24 @@
-cmake_minimum_required(VERSION 2.4 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(AES)
+
 SET(CMAKE_CXX_FLAGS "-std=c++11")
 
 
 
-AUX_SOURCE_DIRECTORY(. SOURCE)
-add_executable(AES ${SOURCE})
-#target_link_libraries(dcgan ${TORCH_LIBRARIES})
+# 编译版本
+SET(CMAKE_BUILD_TYPE "Release")
+#SET(CMAKE_BUILD_TYPE "Debug")
+
+#字符集
+Add_Definitions(-DUNICODE -D_UNICODE)
+
+AUX_SOURCE_DIRECTORY(. SOURCE_LIST)
+
+ADD_EXECUTABLE(AES main.cpp AES.cpp help_function.cpp)
+
+
+
+
+
+
 
