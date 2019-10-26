@@ -9,6 +9,34 @@ word Word(const byte &b1, const byte &b2, const byte &b3, const byte &b4)
 	return word{ s };
 }
 
+byte Gadd(byte a, byte b)
+{
+	return a ^ b;
+}
+
+byte Gmult(byte _a, byte _b)
+{
+	uint8_t a = _a.to_ulong();
+	uint8_t b = _b.to_ulong();
+	auto time_two = [](uint8_t x) {
+		return ((x << 1) ^ ((x & 0x80) ? 0x1b : 0x00));
+	};
+
+	uint8_t temp[8] = {a};
+	uint8_t tempmultiply = 0x00;
+	int i = 0;
+	for (i = 1; i < 8; i++) {
+		temp[i] = time_two(temp[i - 1]);
+	}
+	tempmultiply = (b & 0x01) * a;
+	for (i = 1; i <= 7; i++) {
+		tempmultiply ^= (((b >> i) & 0x01) * temp[i]);
+	}
+	return tempmultiply;
+}
+
+
+
 AES::AES()
 {
 
@@ -19,7 +47,21 @@ AES::~AES()
 
 }
 
-word AES::SubWord(const word& sw)
+void AES::Encrypt(byte(&in)[4 * Nb], byte(&out)[4 * Nb], byte(&key)[4 * Nk])
+{
+	word w[Nb*(Nr + 1)];
+	KeyExpansion(key, w);
+	Cipher(in, out, w);
+}
+
+void AES::InvEncrypt(byte(&in)[4 * Nb], byte(&out)[4 * Nb], byte(&key)[4 * Nk])
+{
+	word w[Nb*(Nr + 1)];
+	KeyExpansion(key, w);
+	InvCipher(in, out, w);
+}
+
+word AES::SubWord(const word& sw)const
 {
 	word temp;
 	for (int i = 0; i < 32; i += 8)
@@ -34,7 +76,7 @@ word AES::SubWord(const word& sw)
 }
 
 
-word AES::RotWord(const word &wd)
+word AES::RotWord(const word &wd)const
 {
 	word high_bytes = wd << 8;
 	word low_byte = wd >> 24;
@@ -42,7 +84,7 @@ word AES::RotWord(const word &wd)
 }
 
 
-void AES::KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])
+void AES::KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])const
 {
 	word temp;
 	int i = 0;
@@ -68,5 +110,211 @@ void AES::KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])
 
 		w[i] = w[i - Nk] ^ temp;
 		i = i + 1;
+	}
+}
+
+void AES::SubBytes(byte(&state)[4][Nb])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < Nb; j++)
+		{
+			uint8_t v = state[i][j].to_ulong();
+			uint8_t row = v >> 4;
+			uint8_t col = (v&0xf);
+			state[i][j] = byte(s_box[row][col]);
+		}
+	}
+}
+
+void AES::InvSubBytes(byte(&state)[4][Nb])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < Nb; j++)
+		{
+			uint8_t v = state[i][j].to_ulong();
+			uint8_t row = v >> 4;
+			uint8_t col = (v & 0xf);
+			state[i][j] = byte(inv_s_box[row][col]);
+		}
+	}
+}
+
+void AES::ShiftRows(byte(&state)[4][Nb])
+{
+	for (int r = 1; r < 4; r++)
+	{
+		CircleShiftToLeftByBytes(state[r], r);
+	}
+}
+
+void AES::InvShiftRows(byte(&state)[4][Nb])
+{
+	for (int r = 1; r < 4; r++)
+	{
+		CircleShiftToLeftByBytes(state[r], 4-r);
+	}
+}
+
+void AES::MixColumns(byte(&state)[4][Nb])
+{
+	static byte M[4][4] = {
+		{0x02,0x03,0x01,0x01},
+		{0x01,0x02,0x03,0x01},
+		{0x01,0x01,0x02,0x03},
+		{0x03,0x01,0x01,0x02},
+	};
+
+	byte result[4][4];
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			result[i][j] = Gmult(M[i][0], state[0][j]) ^ Gmult(M[i][1], state[1][j]) ^ Gmult(M[i][2], state[2][j]) ^ Gmult(M[i][3], state[3][j]);
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			state[i][j] = result[i][j];
+		}
+	}
+}
+
+void AES::InvMixColumns(byte(&state)[4][Nb])
+{
+	static byte M[4][4] = {
+		{0x0E,0x0B,0x0D,0x09},
+		{0x09,0x0E,0x0B,0x0D},
+		{0x0D,0x09,0x0E,0x0B},
+		{0x0B,0x0D,0x09,0x0E},
+	};
+
+	byte result[4][4];
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			result[i][j] = Gmult(M[i][0], state[0][j]) ^ Gmult(M[i][1], state[1][j]) ^ Gmult(M[i][2], state[2][j]) ^ Gmult(M[i][3], state[3][j]);
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			state[i][j] = result[i][j];
+		}
+	}
+}
+
+void AES::AddRoundKey(byte(&state)[4][4], byte(&key)[4][4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			state[i][j] = state[i][j] ^ key[i][j];
+		}
+	}
+}
+
+void AES::Cipher(byte(&in)[4 * Nb], byte(&out)[4 * Nb], word(&w)[Nb*(Nr + 1)])
+{
+	byte state[4][Nb];
+	for (int i = 0; i < 4 * Nb; i++)
+	{
+		state[i % 4][i/4] = in[i];
+	}
+#ifdef DEBUG
+	std::cout << "input:" << std::endl;
+	PrintArray(state);
+#endif
+
+	static byte key[4][4];
+	GetKey(w, 0, key);
+	AddRoundKey(state, key);
+
+#ifdef DEBUG
+	std::cout << "Round Key:" << std::endl;
+	PrintArray(key);
+#endif
+
+
+	for (int round = 1; round < Nr; round++)
+	{
+#ifdef DEBUG
+		std::cout << "-------------------" << "Round: " << round << "-------------------" << std::endl;
+		PrintArray(state);
+#endif
+		SubBytes(state);
+		ShiftRows(state);
+		MixColumns(state);
+
+		GetKey(w, round*Nb, key); // 更新当前轮的key
+		AddRoundKey(state, key);
+	}
+
+	SubBytes(state);
+	ShiftRows(state);
+	GetKey(w, Nr*Nb, key); // 更新当前轮的key
+	AddRoundKey(state, key);
+
+	// 输出
+	for (int i = 0; i < 4 * Nb; i++)
+	{
+		out[i] = state[i % 4][i / 4];
+	}
+
+}
+
+void AES::InvCipher(byte(&in)[4 * Nb], byte(&out)[4 * Nb], word(&w)[Nb*(Nr + 1)])
+{
+	byte state[4][Nb];
+	for (int i = 0; i < 4 * Nb; i++)
+	{
+		state[i % 4][i / 4] = in[i];
+	}
+	
+	static byte key[4][4];
+
+	GetKey(w, Nr*Nb, key);
+	AddRoundKey(state, key);
+
+	for (int round = Nr - 1; round >= 1; round--)
+	{
+		
+		InvShiftRows(state);
+		InvSubBytes(state);
+		GetKey(w, round*Nb, key);
+		AddRoundKey(state, key);
+		InvMixColumns(state);
+	}
+
+	InvShiftRows(state);
+	InvSubBytes(state);
+	
+	GetKey(w, 0, key);
+	AddRoundKey(state, key);
+
+	// 输出
+	for (int i = 0; i < 4 * Nb; i++)
+	{
+		out[i] = state[i % 4][i / 4];
+	}
+	
+}
+
+void AES::GetKey(word(&w)[Nb*(Nr + 1)], int b, byte(&key)[4][4])
+{
+	for (int j = 0; j < 4; j++)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			key[i][j] = ExtractByte(w[b+j], i);
+		}
 	}
 }

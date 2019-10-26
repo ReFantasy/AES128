@@ -1,11 +1,21 @@
 ﻿#ifndef __S_BOX_H__
 #define __S_BOX_H__
+#include <iostream>
+#include <bitset>
+using byte = std::bitset<8>;
+using word = std::bitset<32>;
+
+/*
+ * 将4个byte组成一个word
+ */
+word Word(const byte &b1, const byte &b2, const byte &b3, const byte &b4);
+byte ExtractByte(const word &w, size_t byte_index);
 
 
 /*
  * S-box transformation table
  */
-static uint8_t s_box[16][16] = {
+const uint8_t s_box[16][16] = {
 
 	// 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
 
@@ -43,16 +53,11 @@ static uint8_t s_box[16][16] = {
 
 
 
-
-
-
 /*
-
  * Inverse S-box transformation table
-
  */
 
-static uint8_t inv_s_box[16][16] = {
+const uint8_t inv_s_box[16][16] = {
 
 	// 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
 
@@ -87,5 +92,125 @@ static uint8_t inv_s_box[16][16] = {
 	{0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61}, // e
 
 	{0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d} };// f
+
+
+/** \brief Print Array
+ *  \param[in] T data type
+ *  \param[in] M rows of array
+ *  \param[in] N cols of array
+ *  \return
+ */
+template<typename T, int M, int N>
+void PrintArray(const T(&a)[M][N])
+{
+	printf("Array: %d rows, %d cols \n", M, N);
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			//std::cout << std::hex << a[i][j] << " ";
+			printf("%2X ", a[i][j]);
+		}
+		cout << endl;
+	}
+}
+
+/** \brief Print byte Array
+ *  \param[in] M rows of array
+ *  \param[in] N cols of array
+ *  \return
+ */
+template<int M, int N>
+void PrintArray(const byte(&a)[M][N])
+{
+	printf("Array: %d rows, %d cols \n", M, N);
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			//std::cout << std::hex << a[i][j].to_ullong() << " ";
+			printf("%2X ", a[i][j].to_ullong());
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
+
+template<int N>
+void PrintArray(const byte(&a)[N])
+{
+	printf("Array: %d\n", N);
+
+	for (int j = 0; j < N; j++)
+	{
+		//std::cout << std::hex << a[j].to_ullong() << " ";
+		printf("%2X ", a[j].to_ullong());
+	}
+	std::cout << std::endl;
+
+}
+
+/** \brief Circle Shift
+ *  \param[in] M rows of array
+ *  \param[in] N cols of array
+ *  \return
+ */
+template<int N>
+auto CircleShiftToLeftByBits(const std::bitset<N> data, int bits)->std::bitset<N>
+{
+	std::bitset<N> tmp_data = data;
+	int all_bits = tmp_data.size();
+	int shift_bits = bits % all_bits;
+
+	std::bitset<N> R = (tmp_data >> (all_bits-shift_bits));
+	std::bitset<N> L = tmp_data << shift_bits;
+	return (R | L);
+}
+
+/** \brief Circle Shift
+ *  \param[in] M rows of array
+ *  \param[in] N cols of array
+ *  \return
+ */
+template<int N>
+auto CircleShiftToRightByBits(const std::bitset<N> data, int bits)->std::bitset<N>
+{
+	int all_bits = data.size();
+	int shift_bits = bits % all_bits;
+	// 等价于左移 all_bits-shift_bits
+	return CircleShiftToLeftByBits(data, all_bits - shift_bits);
+}
+
+template<int N>
+void CircleShiftOneByteToLeft(byte (&data)[N])
+{
+	byte v = data[0];
+	for (int i = 1; i < N; i++)
+	{
+		data[i - 1] = data[i];
+	}
+	data[N - 1] = v;
+}
+
+template<int N>
+void CircleShiftToLeftByBytes(byte(&data)[N], int bytes)
+{
+	for (int i = 0; i < bytes; i++)
+	{
+		CircleShiftOneByteToLeft(data);
+	}
+}
+
+template<typename T, int M, int N>
+void ArrayCopy(T(&dst)[M][N], T(&src)[M][N])
+{
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			dst[i][j] = src[i][j];
+		}
+	}
+}
 
 #endif//__S_BOX_H__
