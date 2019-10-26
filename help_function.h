@@ -124,7 +124,7 @@ void PrintArray(const T(&a)[M][N])
 			//std::cout << std::hex << a[i][j] << " ";
 			printf("%2X ", a[i][j]);
 		}
-		cout << endl;
+		std::cout << std::endl;
 	}
 }
 

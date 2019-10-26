@@ -15,10 +15,3 @@ Add_Definitions(-DUNICODE -D_UNICODE)
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
 
 ADD_EXECUTABLE(aes ${SRC_LIST})
-
-
-
-
-
-
-
