@@ -165,7 +165,7 @@ auto CircleShiftToLeftByBits(const std::bitset<N> data, int bits)->std::bitset<N
 	int all_bits = tmp_data.size();
 	int shift_bits = bits % all_bits;
 
-	std::bitset<N> R = (tmp_data >> (all_bits-shift_bits));
+	std::bitset<N> R = (tmp_data >> (all_bits - shift_bits));
 	std::bitset<N> L = tmp_data << shift_bits;
 	return (R | L);
 }
@@ -181,7 +181,7 @@ auto CircleShiftToRightByBits(const std::bitset<N> data, int bits)->std::bitset<
 }
 
 template<int N>
-void CircleShiftOneByteToLeft(byte (&data)[N])
+void CircleShiftOneByteToLeft(byte(&data)[N])
 {
 	byte v = data[0];
 	for (int i = 1; i < N; i++)

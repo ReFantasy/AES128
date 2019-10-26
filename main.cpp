@@ -23,7 +23,7 @@ int main()
 
 	cout << "明文" << endl;
 	PrintArray(in);
-	std::cout<<std::endl;
+	std::cout << std::endl;
 
 	cout << "密钥" << endl;
 	PrintArray(key);
@@ -32,7 +32,7 @@ int main()
 	// 加密
 	aes.Encrypt(in, out, key);
 
-	
+
 	cout << "密文" << endl;
 	PrintArray(out);
 	std::cout << std::endl;
