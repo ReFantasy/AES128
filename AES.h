@@ -1,5 +1,9 @@
 ﻿/******************************************************************************************************************************************************
  *
+ *  The MIT License (MIT)
+ *
+ *  Copyright (c) 2019  Tan DongLiang @cust
+ *
  *  https://csrc.nist.gov/csrc/media/publications/fips/197/final/documents/fips-197.pdf
  *
  *  Reference:

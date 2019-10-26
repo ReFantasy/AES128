@@ -1,6 +1,12 @@
-﻿#include "AES.h"
+﻿/******************************************************************************************
+ *
+ *  The MIT License (MIT)
+ *
+ *  Copyright (c) 2019  Tan DongLiang @cust
+ *
+ ******************************************************************************************/
+#include "AES.h"
 #include <string>
-
 
 
 word Word(const byte &b1, const byte &b2, const byte &b3, const byte &b4)
