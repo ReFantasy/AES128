@@ -26,7 +26,7 @@ word AES::SubWord(const word& sw)
 	{
 		int row = sw[i + 7] * 8 + sw[i + 6] * 4 + sw[i + 5] * 2 + sw[i + 4];
 		int col = sw[i + 3] * 8 + sw[i + 2] * 4 + sw[i + 1] * 2 + sw[i];
-		byte val = S_Box[row][col];
+		byte val = s_box[row][col];
 		for (int j = 0; j < 8; ++j)
 			temp[i + j] = val[j];
 	}
