@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+PROJECT(AES)
+SET(CMAKE_CXX_FLAGS "-std=c++11")
+
+
+
+AUX_SOURCE_DIRECTORY(. SOURCE)
+add_executable(AES ${SOURCE})
+#target_link_libraries(dcgan ${TORCH_LIBRARIES})
+
