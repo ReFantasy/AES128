@@ -49,87 +49,110 @@ class AES
 public:
 	AES();
 	~AES();
+
+	/** \brief AES-128 加密
+	 *  \param[in] in 包含16(Nb=4)个字节的明文数据
+	 *  \param[out] out 加密后的数据
+	 *  \param[in] key 包含16(Nk=4)个字节的密钥
+	 *  \return void
+	 */
 	void Encrypt(byte(&in)[4 * Nb], byte(&out)[4 * Nb], byte(&key)[4 * Nk]);
+
+
+	/** \brief AES-128 解密
+	 *  \param[in] in 包含16(Nb=4)个字节的加密数据
+	 *  \param[out] out 解密后的明文数据
+	 *  \param[in] key 包含16(Nk=4)个字节的密钥（加解密使用相同的密钥）
+	 *  \return void
+	 */
 	void InvEncrypt(byte(&in)[4 * Nb], byte(&out)[4 * Nb], byte(&key)[4 * Nk]);
 
 	
 
-//private:
-	/** \brief The function SubWord() takes a four-byte input word and applies the S-box
-	 *  \param[in] 
-	 *  \return 
+private:
+	/** \brief 使用S-box进行字节映射
+	 *  \param[in] sw 包含四个字节的字
+	 *  \return 对sw的每个字节分别映射后的结果
 	 */
 	word SubWord(const word& sw)const;
 
-	/** \brief The function RotWord() takes a word [a0,a1,a2,a3] as input, performs a cyclic permutation, and returns the word [a1,a2,a3,a0].
-	 *  \param[in] 
-	 *  \return 
+	/** \brief 将具有四个字节的字左移一个字节 word [a0,a1,a2,a3] =》 [a1,a2,a3,a0].
+	 *  \param[in] wd 包含四个字节的字
+	 *  \return 移位结果
 	 */
 	word RotWord(const word &wd)const;
 
-	/** \brief The Key Expansion generates a total of Nb (Nr + 1) words
-     *  \param[in] 
-     *  \return 
+	/** \brief 密钥扩展
+     *  \param[in] key 初始密钥
+	 *  \param[out] w 扩展后的(Nr+1)组密钥，包含初始密钥
+     *  \return void
 	 */
 	void KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])const;
 
 
-	/** \brief 
-	 *  \param[in]
-	 *  \return
+	/** \brief 使用S-box对数组中的每个字节进行映射
+	 *  \param[in][out] state 二维字节数组
+	 *  \return void
 	 */
 	void SubBytes(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 使用S-box对数组中的每个字节进行逆映射
+	 *  \param[in][out] state 二维字节数组
 	 *  \return
 	 */
 	void InvSubBytes(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 循环移位，第r行进行左移r个字节
+	 *  \param[in][out] state 二维字节数组
 	 *  \return
 	 */
 	void ShiftRows(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief ShiftRows()的逆操作
+	 *  \param[in] state 二维字节数组
 	 *  \return
 	 */
 	void InvShiftRows(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 列混淆，使用混淆矩阵进行矩阵乘法运算
+	 *  \param[in][out] state 二维字节矩阵
 	 *  \return
 	 */
 	void MixColumns(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 列混淆的逆运算
+	 *  \param[in][out] state 二维字节矩阵
 	 *  \return
 	 */
 	void InvMixColumns(byte(&state)[4][Nb]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 轮密码加，矩阵对应元素进行异或操作
+	 *  \param[in][out] state 状态矩阵
+	 *  \param[in][out] key 密钥
 	 *  \return
 	 */
 	void AddRoundKey(byte(&state)[4][4], byte(&key)[4][4]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 加密驱动程序
+	 *  \param[in] in 需要加密的数据
+	 *  \param[out] out 加密后的数据
+	 *  \param[in] w 加密过程中使用的密钥以及扩展密钥
 	 *  \return
 	 */
 	void Cipher(byte(&in)[4 * Nb], byte(&out)[4 * Nb], word(&w)[Nb*(Nr + 1)]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 解密驱动程序
+	 *  \param[in] in 需要解密的数据
+	 *  \param[out] out 解密后的数据
+	 *  \param[in] w 解密过程中使用的密钥以及扩展密钥
 	 *  \return
 	 */
 	void InvCipher(byte(&in)[4 * Nb], byte(&out)[4 * Nb], word(&w)[Nb*(Nr + 1)]);
 
-	/** \brief
-	 *  \param[in]
+	/** \brief 将四个字提取为二维字节数组
+	 *  \param[in] w 字数组
+	 *  \param[in] b 提取的位置索引
+	 *  \param[out] 从b位置开始，连续四个字所组成的二维字节数组
 	 *  \return
 	 */
 	void GetKey(word(&w)[Nb*(Nr + 1)], int b, byte(&key)[4][4]);

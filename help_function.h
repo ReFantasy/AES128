@@ -9,6 +9,12 @@ using word = std::bitset<32>;
  * 将4个byte组成一个word
  */
 word Word(const byte &b1, const byte &b2, const byte &b3, const byte &b4);
+
+/** \brief 从字中抽取字节元素
+ *  \param[in] w 包含若干字节的字
+ *  \param[in] byte_index 抽取的字节位置
+ *  \return 抽取的字节
+ */
 byte ExtractByte(const word &w, size_t byte_index);
 
 
@@ -115,10 +121,8 @@ void PrintArray(const T(&a)[M][N])
 	}
 }
 
-/** \brief Print byte Array
- *  \param[in] M rows of array
- *  \param[in] N cols of array
- *  \return
+/*
+ *  打印数组
  */
 template<int M, int N>
 void PrintArray(const byte(&a)[M][N])
@@ -150,10 +154,9 @@ void PrintArray(const byte(&a)[N])
 
 }
 
-/** \brief Circle Shift
- *  \param[in] M rows of array
- *  \param[in] N cols of array
- *  \return
+/*
+ * 按位循环左移
+ *
  */
 template<int N>
 auto CircleShiftToLeftByBits(const std::bitset<N> data, int bits)->std::bitset<N>
@@ -167,11 +170,7 @@ auto CircleShiftToLeftByBits(const std::bitset<N> data, int bits)->std::bitset<N
 	return (R | L);
 }
 
-/** \brief Circle Shift
- *  \param[in] M rows of array
- *  \param[in] N cols of array
- *  \return
- */
+
 template<int N>
 auto CircleShiftToRightByBits(const std::bitset<N> data, int bits)->std::bitset<N>
 {

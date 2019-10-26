@@ -1,7 +1,7 @@
 ﻿#include <iostream>
-
 #include "AES.h"
 using namespace std;
+
 int main()
 {
 	AES aes;
@@ -29,6 +29,7 @@ int main()
 	PrintArray(key);
 	std::cout << std::endl;
 
+	// 加密
 	aes.Encrypt(in, out, key);
 
 	
@@ -36,15 +37,11 @@ int main()
 	PrintArray(out);
 	std::cout << std::endl;
 
-
+	// 解密
 	aes.InvEncrypt(out, out, key);
 	cout << "解密后的数据" << endl;
 	PrintArray(out);
 	std::cout << std::endl;
-	
 
-	
-
-	system("pause");
 	return 0;
 }

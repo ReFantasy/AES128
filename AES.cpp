@@ -84,6 +84,10 @@ word AES::RotWord(const word &wd)const
 }
 
 
+/*
+ * 输入的初始密钥为二维字节输出，扩展后的密钥为一维“字”数组，从初始位置开始，连续相邻的
+ * 四个字组成一组密钥，其中每个字代表该组密钥中的一列。
+ */
 void AES::KeyExpansion(byte(&key)[4 * Nk], word(&w)[Nb*(Nr + 1)])const
 {
 	word temp;
