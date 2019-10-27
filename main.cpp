@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include "AES.h"
+#include <chrono>
 using namespace std;
 
 int main()
@@ -19,6 +20,21 @@ int main()
 		0xab,0xf7,0x15,0x88,
 		0x09,0xcf,0x4f,0x3c
 	};
+
+	/*byte in[16] = {
+		0xaa,0xaa,0xaa,0xaa,
+		0xaa,0xaa,0xaa,0xaa,
+		0xaa,0xaa,0xaa,0xaa,
+		0xaa,0xaa,0xaa,0xaa
+	};
+
+	byte key[16] = {
+		0xbb,0xbb,0xbb,0xbb,
+		0xbb,0xbb,0xbb,0xbb,
+		0xbb,0xbb,0xbb,0xbb,
+		0xbb,0xbb,0xbb,0xbb
+	};*/
+
 	byte out[16];
 
 	cout << "明文" << endl;
@@ -29,8 +45,10 @@ int main()
 	PrintArray(key);
 	std::cout << std::endl;
 
+	auto t1 = std::chrono::high_resolution_clock::now();
 	// 加密
 	aes.Encrypt(in, out, key);
+	auto t2 = std::chrono::high_resolution_clock::now();
 
 
 	cout << "密文" << endl;
@@ -43,5 +61,8 @@ int main()
 	PrintArray(out);
 	std::cout << std::endl;
 
+	// 输出加密用时
+	cout << "加密用时:" << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()/1000.0<<" ms" << endl;
+	system("pause");
 	return 0;
 }

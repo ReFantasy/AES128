@@ -92,7 +92,7 @@ word AES::SubWord(const word& sw)const
 	{
 		int row = sw[i + 7] * 8 + sw[i + 6] * 4 + sw[i + 5] * 2 + sw[i + 4];
 		int col = sw[i + 3] * 8 + sw[i + 2] * 4 + sw[i + 1] * 2 + sw[i];
-		byte val = s_box[row][col];
+		byte val = s_box[row * 16 + col];
 		for (int j = 0; j < 8; ++j)
 			temp[i + j] = val[j];
 	}
@@ -148,9 +148,7 @@ void AES::SubBytes(byte(&state)[4][Nb])
 		for (int j = 0; j < Nb; j++)
 		{
 			uint8_t v = state[i][j].to_ulong();
-			uint8_t row = v >> 4;
-			uint8_t col = (v & 0xf);
-			state[i][j] = byte(s_box[row][col]);
+			state[i][j] = byte(s_box[v]);
 		}
 	}
 }
@@ -162,9 +160,7 @@ void AES::InvSubBytes(byte(&state)[4][Nb])
 		for (int j = 0; j < Nb; j++)
 		{
 			uint8_t v = state[i][j].to_ulong();
-			uint8_t row = v >> 4;
-			uint8_t col = (v & 0xf);
-			state[i][j] = byte(inv_s_box[row][col]);
+			state[i][j] = byte(inv_s_box[v]);
 		}
 	}
 }
